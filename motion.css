@@ -1,0 +1,212 @@
+/* =====================================================================
+   2AE CONSEIL — MOTION DESIGN
+   Couche additive : ne modifie aucune règle de styles.css.
+   Activée seulement quand motion.js pose la classe html.m-js.
+   Pour tout désactiver : retirer les 2 lignes d'appel dans le <head>,
+   ou ajouter data-motion="off" sur la balise <html>.
+   ===================================================================== */
+
+:root{
+  /* --- Réglages centralisés ------------------------------------------ */
+  --m-ease: cubic-bezier(.22,.61,.36,1);          /* easing éditorial */
+  --m-ease-soft: cubic-bezier(.45,.05,.35,1);     /* ease-in-out lent */
+
+  --m-color-accent: 185,32,46;                    /* = --red (#B9202E) */
+  --m-color-ink: 28,26,26;                        /* = --ink (#1C1A1A) */
+
+  --m-op-signature: .11;   /* courbe signature 2AE */
+  --m-op-line: .055;       /* lignes de données */
+  --m-op-orbit: .065;      /* grands arcs */
+  --m-op-grid: .03;        /* filets architecturaux */
+  --m-op-dot: .45;         /* points (très petits) */
+  --m-op-hero: .16;        /* formes du bandeau de tête */
+
+  --m-orbit-duration: 42s;
+  --m-drift-duration: 34s;
+  --m-breath-duration: 18s;
+  --m-draw-duration: 4.8s;
+
+  --m-reveal-duration: 650ms;
+  --m-reveal-distance: 25px;
+  --m-title-duration: 700ms;
+  --m-hover-duration: 400ms;
+}
+
+/* =====================================================================
+   1. FOND GLOBAL (fixe, derrière tout le contenu)
+   ===================================================================== */
+.motion-background{
+  position:fixed; inset:0; z-index:-1;       /* sous le contenu, au-dessus du fond blanc */
+  pointer-events:none; overflow:hidden;
+  opacity:0; transition:opacity 1.6s var(--m-ease);
+}
+html.m-ready .motion-background{opacity:1;}
+.motion-layer{position:absolute; inset:-40px; will-change:transform;}
+.motion-layer svg{width:100%; height:100%; display:block; overflow:visible;}
+.motion-drift{transform-box:view-box; transform-origin:50% 50%;}
+
+/* Filets architecturaux (évocation de colonnes / tableur) */
+.motion-grid line{stroke:rgb(var(--m-color-ink)); stroke-opacity:var(--m-op-grid); stroke-width:1; vector-effect:non-scaling-stroke;}
+
+/* Grands arcs : un cercle géant dont on ne voit qu'une portion */
+.motion-orbit{
+  fill:none; stroke:rgb(var(--m-color-ink)); stroke-opacity:var(--m-op-orbit);
+  stroke-width:1; vector-effect:non-scaling-stroke;
+  transform-box:fill-box; transform-origin:50% 50%;
+  animation:m-orbit var(--m-orbit-duration) var(--m-ease-soft) infinite alternate;
+}
+.motion-orbit--b{animation-duration:calc(var(--m-orbit-duration) * 1.2); animation-direction:alternate-reverse;}
+@keyframes m-orbit{
+  from{transform:rotate(-1.4deg) translate3d(0,0,0);}
+  to  {transform:rotate(1.4deg) translate3d(-6px,4px,0);}
+}
+
+/* Courbe signature 2AE : trajectoire d'accompagnement */
+.motion-curve{fill:none; stroke-linecap:round; vector-effect:non-scaling-stroke;}
+.motion-curve--signature{
+  stroke:rgb(var(--m-color-accent)); stroke-opacity:var(--m-op-signature); stroke-width:1.25;
+  stroke-dasharray:1; stroke-dashoffset:1;                     /* pathLength="1" dans le SVG */
+  animation:m-draw var(--m-draw-duration) var(--m-ease) .4s forwards;
+}
+.motion-curve--echo{stroke:rgb(var(--m-color-accent)); stroke-opacity:calc(var(--m-op-signature) * .45); stroke-width:1;
+  stroke-dasharray:1; stroke-dashoffset:1; animation:m-draw calc(var(--m-draw-duration) * 1.3) var(--m-ease) 1.1s forwards;}
+@keyframes m-draw{to{stroke-dashoffset:0;}}
+
+/* Lignes de données : très fines, elles glissent et respirent */
+.motion-line{fill:none; stroke:rgb(var(--m-color-ink)); stroke-opacity:var(--m-op-line); stroke-width:1; vector-effect:non-scaling-stroke;}
+.motion-drift--a{animation:m-drift-a var(--m-drift-duration) var(--m-ease-soft) infinite alternate;}
+.motion-drift--b{animation:m-drift-b calc(var(--m-drift-duration) * 1.25) var(--m-ease-soft) infinite alternate;}
+.motion-drift--c{animation:m-drift-c calc(var(--m-drift-duration) * 1.6) var(--m-ease-soft) infinite alternate;}
+@keyframes m-drift-a{from{transform:translate3d(-18px,0,0);} to{transform:translate3d(22px,-8px,0);}}
+@keyframes m-drift-b{from{transform:translate3d(16px,6px,0); opacity:.55;} 50%{opacity:1;} to{transform:translate3d(-20px,-4px,0); opacity:.7;}}
+@keyframes m-drift-c{from{transform:translate3d(0,0,0) scale(1);} to{transform:translate3d(-10px,6px,0) scale(1.012);}}
+
+/* Points de connexion (rares) */
+.motion-particle{fill:rgb(var(--m-color-accent)); fill-opacity:var(--m-op-dot);}
+.motion-particle-halo{fill:rgb(var(--m-color-accent)); fill-opacity:.06;}
+
+/* =====================================================================
+   2. BANDEAUX DE TÊTE (.page-hero rouge, .hero clair, .cta-banner sombre)
+   ===================================================================== */
+html.m-js .page-hero, html.m-js .hero, html.m-js .cta-banner{position:relative; overflow:hidden; isolation:isolate;}
+html.m-js .page-hero > .container, html.m-js .hero > .container, html.m-js .cta-banner > .container{position:relative; z-index:1;}
+.motion-hero{position:absolute; inset:-30px; z-index:0; pointer-events:none; color:#fff; will-change:transform;}
+.motion-hero.is-light{color:rgb(var(--m-color-accent));}
+.motion-hero svg{width:100%; height:100%; display:block;}
+.motion-hero .mh-breath{transform-box:view-box; transform-origin:80% 60%; animation:m-breath var(--m-breath-duration) var(--m-ease-soft) infinite alternate;}
+.motion-hero .mh-arc{fill:none; stroke:currentColor; stroke-opacity:var(--m-op-hero); stroke-width:1; vector-effect:non-scaling-stroke;}
+.motion-hero .mh-arc--thin{stroke-opacity:calc(var(--m-op-hero) * .55);}
+.motion-hero .mh-curve{fill:none; stroke:currentColor; stroke-opacity:calc(var(--m-op-hero) * 1.15); stroke-width:1.25; stroke-linecap:round; vector-effect:non-scaling-stroke;
+  stroke-dasharray:1; stroke-dashoffset:1; animation:m-draw 3.6s var(--m-ease) .5s forwards;}
+.motion-hero .mh-dot{fill:currentColor; fill-opacity:.55;}
+.motion-hero .mh-halo{fill:currentColor; fill-opacity:.08;}
+.motion-hero .mh-slide{animation:m-slide 38s var(--m-ease-soft) infinite alternate;}
+.motion-hero.is-light .mh-arc{stroke-opacity:calc(var(--m-op-hero) * .6);}
+.motion-hero.is-light .mh-curve{stroke-opacity:calc(var(--m-op-hero) * .7);}
+.motion-hero.is-light .mh-dot{fill-opacity:.35;}
+@keyframes m-breath{from{transform:scale(1);} to{transform:scale(1.025);}}
+@keyframes m-slide{from{transform:translate3d(-14px,0,0);} to{transform:translate3d(14px,-6px,0);}}
+
+/* =====================================================================
+   3. TITRES : apparition éditoriale au chargement (CSS pur, sans flash)
+   ===================================================================== */
+@keyframes m-rise{from{opacity:0; transform:translate3d(0,20px,0);} to{opacity:1; transform:none;}}
+html.m-js :is(.page-hero, .hero) :is(.pill, .breadcrumb){animation:m-rise var(--m-title-duration) var(--m-ease) 0s both;}
+html.m-js :is(.page-hero, .hero) h1{animation:m-rise var(--m-title-duration) var(--m-ease) .08s both;}
+html.m-js :is(.page-hero, .hero) h1 + p, html.m-js .hero__lead{animation:m-rise var(--m-title-duration) var(--m-ease) .22s both;}
+html.m-js .hero__actions, html.m-js .hero__media, html.m-js .actu-freshness{animation:m-rise var(--m-title-duration) var(--m-ease) .36s both;}
+
+/* =====================================================================
+   4. APPARITION AU DÉFILEMENT (cartes, blocs)
+   ===================================================================== */
+html.m-js .m-reveal{
+  opacity:0; transform:translate3d(0,var(--m-reveal-distance),0) scale(.985);
+  transition:opacity var(--m-reveal-duration) var(--m-ease), transform var(--m-reveal-duration) var(--m-ease);
+  transition-delay:var(--m-delay, 0ms);
+}
+html.m-js .m-reveal.m-in{opacity:1; transform:none;}
+/* une fois apparue, la carte retrouve des transitions de survol rapides */
+html.m-js .m-reveal.m-done{transition-delay:0ms;}
+
+/* =====================================================================
+   5. MICRO-INTERACTIONS
+   ===================================================================== */
+/* Cartes */
+html.m-js :is(.article-card, .card).m-done{
+  transition:transform var(--m-hover-duration) var(--m-ease), box-shadow var(--m-hover-duration) var(--m-ease), border-color var(--m-hover-duration) var(--m-ease);
+}
+@media (hover:hover){
+  html.m-js :is(.article-card, .card).m-done:hover{
+    transform:translate3d(0,-4px,0);
+    box-shadow:0 22px 44px -26px rgba(var(--m-color-ink),.32);
+    border-color:rgba(var(--m-color-accent),.28);
+  }
+}
+/* Images d'articles : zoom lent, jamais hors cadre */
+html.m-js .article-card__media{overflow:hidden;}
+html.m-js .article-card__media img{transition:transform 1.1s var(--m-ease), filter 1.1s var(--m-ease); transform-origin:50% 50%;}
+@media (hover:hover){
+  html.m-js .article-card:hover .article-card__media img{transform:scale(1.03); filter:brightness(1.03);}
+}
+/* Flèches « → » des liens et boutons */
+.m-arrow{display:inline-block; transition:transform .35s var(--m-ease);}
+@media (hover:hover){
+  html.m-js :is(.article-card, .card):hover .m-arrow,
+  html.m-js :is(.article-card__link, .card__link, .btn):hover .m-arrow{transform:translate3d(4px,0,0);}
+}
+/* Boutons */
+html.m-js .btn{transition:transform .3s var(--m-ease), background-color .3s var(--m-ease), color .3s var(--m-ease), border-color .3s var(--m-ease), box-shadow .3s var(--m-ease), opacity .3s;}
+@media (hover:hover){
+  html.m-js .btn:hover{transform:translate3d(0,-2px,0); box-shadow:0 10px 22px -14px rgba(var(--m-color-ink),.45);}
+  html.m-js .btn:active{transform:translate3d(0,0,0); box-shadow:none;}
+}
+/* Liens de cartes : soulignement qui se dessine */
+html.m-js :is(.article-card__link, .card__link){background:linear-gradient(currentColor,currentColor) 0 100% / 0 1px no-repeat; transition:background-size .45s var(--m-ease); padding-bottom:1px;}
+@media (hover:hover){ html.m-js :is(.article-card__link, .card__link):hover{background-size:100% 1px;} }
+
+/* =====================================================================
+   6. HEADER qui « s'ancre » au défilement
+   ===================================================================== */
+html.m-js .nav{transition:background-color .45s var(--m-ease), box-shadow .45s var(--m-ease), border-color .45s var(--m-ease), backdrop-filter .45s var(--m-ease);}
+html.m-js .nav .logo__badge{transition:transform .45s var(--m-ease);}
+html.m-js .nav.m-scrolled{
+  background:rgba(255,255,255,.86);
+  -webkit-backdrop-filter:saturate(1.4) blur(12px); backdrop-filter:saturate(1.4) blur(12px);
+  box-shadow:0 10px 30px -18px rgba(var(--m-color-ink),.28);
+  border-bottom-color:rgba(var(--m-color-ink),.06);
+}
+html.m-js .nav.m-scrolled .logo__badge{transform:scale(.94);}
+
+/* Continuité du fond : les sections grises laissent deviner les lignes */
+html.m-js .section--grey{background:rgba(245,242,240,.9);}
+
+/* =====================================================================
+   7. RESPONSIVE — tablette réduite, mobile très léger
+   ===================================================================== */
+@media (max-width:1100px){
+  .motion-line--b, .motion-particle--b{display:none;}
+  :root{--m-op-line:.045;}
+}
+@media (max-width:767px){
+  .motion-grid, .motion-line, .motion-orbit--b, .motion-particle--b, .motion-particle--c, .motion-curve--echo{display:none;}
+  .motion-hero .mh-arc--thin, .motion-hero .mh-dot--b{display:none;}
+  :root{--m-op-signature:.09; --m-op-hero:.14; --m-reveal-distance:16px;}
+  .motion-layer, .motion-hero{will-change:auto;}
+}
+
+/* =====================================================================
+   8. ACCESSIBILITÉ — mouvements réduits
+   ===================================================================== */
+@media (prefers-reduced-motion: reduce){
+  .motion-background *, .motion-hero *{animation:none !important;}
+  .motion-curve--signature, .motion-curve--echo, .motion-hero .mh-curve{stroke-dashoffset:0;}
+  .motion-particle, .motion-particle-halo, .motion-hero .mh-dot, .motion-hero .mh-halo{display:none;}
+  html.m-js :is(.page-hero, .hero) *, html.m-js .hero__actions, html.m-js .hero__media, html.m-js .actu-freshness{animation:none !important;}
+  html.m-js .m-reveal{opacity:1; transform:none; transition:none;}
+  html.m-js :is(.article-card, .card):hover, html.m-js .btn:hover{transform:none !important;}
+  html.m-js .article-card:hover .article-card__media img{transform:none;}
+  .motion-layer, .motion-hero{transform:none !important;}
+}
+
+/* Impression : aucun décor */
+@media print{ .motion-background, .motion-hero{display:none !important;} }
