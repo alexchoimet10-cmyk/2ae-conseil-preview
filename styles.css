@@ -279,8 +279,14 @@ textarea { resize: vertical; min-height: 110px; }
 }
 
 /* ===== Menu mobile (bouton + panneau déroulant) ===== */
-.nav__burger { -webkit-appearance: none; appearance: none; width: 48px; height: 48px; padding: 0; border: 1.5px solid var(--line); border-radius: 999px; background: var(--white); color: var(--ink); font-size: 24px; line-height: 1; cursor: pointer; align-items: center; justify-content: center; flex-shrink: 0; transition: border-color .15s ease, color .15s ease, background .15s ease; }
-.nav__burger:hover, .nav__burger[aria-expanded="true"] { border-color: var(--red); color: var(--red); background: var(--red-light); }
+/* Les trois contrôles de l'en-tête ont exactement la même hauteur. */
+.nav__login-btn, .nav__actions .btn--sm { display: inline-flex; font-size: 13px; }
+.nav__login-btn, .nav__actions .btn--sm, .nav__burger { box-sizing: border-box; height: 40px; align-items: center; justify-content: center; line-height: 1; padding-top: 0; padding-bottom: 0; }
+.nav__burger { display: none; -webkit-appearance: none; appearance: none; width: 40px; padding: 0; border: 1.5px solid var(--line); border-radius: 999px; cursor: pointer; flex-shrink: 0; color: var(--ink); font-size: 0; background-color: var(--white);
+  background-image: linear-gradient(currentColor, currentColor), linear-gradient(currentColor, currentColor), linear-gradient(currentColor, currentColor);
+  background-size: 16px 1.5px; background-repeat: no-repeat; background-position: center calc(50% - 5px), center 50%, center calc(50% + 5px);
+  transition: border-color .15s ease, color .15s ease, background-color .15s ease; }
+.nav__burger:hover, .nav__burger[aria-expanded="true"] { border-color: var(--red); color: var(--red); background-color: var(--red-light); }
 @media (max-width: 900px) {
   .nav__burger { display: inline-flex; }
   .nav__links { top: 78px; padding: 6px 24px 18px; gap: 0; box-shadow: 0 24px 40px -24px rgba(28,26,26,.28); max-height: calc(100vh - 78px); overflow-y: auto; }
@@ -289,8 +295,16 @@ textarea { resize: vertical; min-height: 110px; }
   .nav__links a.is-active { color: var(--red); font-weight: 600; border-bottom-color: var(--line); }
 }
 @media (max-width: 420px) {
+  .nav__inner { gap: 8px; }
   .nav__actions { gap: 6px; }
-  .nav__burger { width: 46px; height: 46px; font-size: 23px; }
-  .nav__login-btn { padding: 8px 9px; font-size: 12px; }
-  .nav__actions .btn--sm { padding: 9px 11px; font-size: 12.5px; }
+  .nav__login-btn { padding-left: 9px; padding-right: 9px; font-size: 12px; }
+  .nav__actions .btn--sm { padding-left: 10px; padding-right: 10px; font-size: 12px; }
+}
+@media (max-width: 370px) {
+  .nav .container.nav__inner { padding-left: 12px; padding-right: 12px; gap: 4px; }
+  .logo__badge { width: auto; height: auto; padding: 6px 7px; }
+  .logo__badge img { width: 44px; height: auto; }
+  .nav__actions { gap: 4px; }
+  .nav__login-btn { padding-left: 6px; padding-right: 6px; font-size: 11px; }
+  .nav__actions .btn--sm { padding-left: 7px; padding-right: 7px; font-size: 11px; }
 }
